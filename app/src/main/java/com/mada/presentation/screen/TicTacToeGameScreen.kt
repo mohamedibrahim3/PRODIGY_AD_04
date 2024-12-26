@@ -33,14 +33,14 @@ fun TicTacToeGameScreen(viewModel: TicTacToeViewModel) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(6.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
         Text(
             text = "Tic Tac Toe",
             style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.padding(bottom = 16.dp)
+            modifier = Modifier.padding(bottom = 32.dp)
         )
 
         // شبكة اللعبة 3x3
@@ -56,7 +56,7 @@ fun TicTacToeGameScreen(viewModel: TicTacToeViewModel) {
                     row.forEachIndexed { colIndex, cell ->
                         Box(
                             modifier = Modifier
-                                .size(100.dp)
+                                .size(130.dp)
                                 .border(1.dp, MaterialTheme.colorScheme.onSurface)
                                 .clickable { viewModel.onCellClick(rowIndex, colIndex) },
                             contentAlignment = Alignment.Center
@@ -81,7 +81,7 @@ fun TicTacToeGameScreen(viewModel: TicTacToeViewModel) {
         }
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = gameState.winner ?: "Current Player: ${gameState.currentPlayer.toString()}",
+            text = gameState.winner?.let { "$it Winner!!!" } ?: "Current Player: ${gameState.currentPlayer}",
             style = MaterialTheme.typography.bodyLarge
         )
 
