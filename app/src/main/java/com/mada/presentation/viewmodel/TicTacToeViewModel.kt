@@ -20,19 +20,18 @@ class TicTacToeViewModel(context: Context) : ViewModel() {
 
     fun onCellClick(row: Int, col: Int) {
         val state = _gameState.value
-        if (state.board[row][col] == null && state.currentPlayer != 'X' && state.currentPlayer != 'O') {
-            val newBoard = state.board.toMutableList()
-            newBoard[row] = newBoard[row].toMutableList().apply { this[col] = state.currentPlayer }
-            val nextPlayer = if (state.currentPlayer == 'X') 'O' else 'X'
-            _gameState.value = GameState(newBoard, nextPlayer)
+        if (state.board[row][col] == null && state.winner == null) {
+            val newBoard = state.board.map { it.toMutableList() }.toMutableList()
+            newBoard[row][col] = state.currentPlayer
 
-            if (checkWin(newBoard)) {
-                val winner = "${state.currentPlayer} Wins!"
-                _gameState.value = _gameState.value.copy(currentPlayer = if (state.currentPlayer == 'X') 'O' else 'X', winner = winner)
-                saveGameState()
-            } else {
-                saveGameState()
-            }
+            val winner = if (checkWin(newBoard)) state.currentPlayer else null
+            val nextPlayer = if (state.currentPlayer == 'X') 'O' else 'X'
+
+            _gameState.value = GameState(
+                board = newBoard,
+                currentPlayer = nextPlayer,
+                winner = winner.toString()
+            )
         }
     }
 
