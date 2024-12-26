@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.StateFlow
 class TicTacToeViewModel(context: Context) : ViewModel() {
 
     private val sharedPreferences: SharedPreferences = context.getSharedPreferences("TicTacToePrefs", Context.MODE_PRIVATE)
-
     private val _gameState = MutableStateFlow(GameState(board = List(3) { List(3) { null } }, currentPlayer = 'X'))
     val gameState: StateFlow<GameState> = _gameState
 
@@ -21,23 +20,16 @@ class TicTacToeViewModel(context: Context) : ViewModel() {
     fun onCellClick(row: Int, col: Int) {
         val state = _gameState.value
         if (state.board[row][col] == null && state.winner == null) {
-            // إنشاء نسخة جديدة من البوردة
             val newBoard = state.board.map { it.toMutableList() }.toMutableList()
             newBoard[row][col] = state.currentPlayer
-
-            // التحقق من الفائز
             val winner = if (checkWin(newBoard)) state.currentPlayer else null
-
-            // تحديث اللاعب الحالي
             val nextPlayer = if (state.currentPlayer == 'X') 'O' else 'X'
-
-            // تحديث حالة اللعبة
             _gameState.value = GameState(
-                board = newBoard.map { it.toList() }, // تحويل مرة أخرى لقوائم غير قابلة للتعديل
+                board = newBoard.map { it.toList() },
                 currentPlayer = if (winner == null) nextPlayer else state.currentPlayer,
                 winner = winner?.toString()
             )
-            saveGameState() // حفظ الحالة الجديدة
+            saveGameState()
         }
     }
 
