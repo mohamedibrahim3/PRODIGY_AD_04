@@ -23,16 +23,17 @@ class TicTacToeViewModel(context: Context) : ViewModel() {
             val newBoard = state.board.map { it.toMutableList() }.toMutableList()
             newBoard[row][col] = state.currentPlayer
             val winner = if (checkWin(newBoard)) state.currentPlayer else null
+            val winnerLine = if (winner != null) findWinningLine(newBoard) else emptyList()
             val nextPlayer = if (state.currentPlayer == 'X') 'O' else 'X'
             _gameState.value = GameState(
                 board = newBoard.map { it.toList() },
                 currentPlayer = if (winner == null) nextPlayer else state.currentPlayer,
-                winner = winner?.toString()
+                winner = winner?.toString(),
+                winnerLine = winnerLine
             )
             saveGameState()
         }
     }
-
 
     fun resetGame() {
         _gameState.value = GameState(board = List(3) { List(3) { null } }, currentPlayer = 'X')
@@ -47,6 +48,30 @@ class TicTacToeViewModel(context: Context) : ViewModel() {
         if (board[0][0] != null && board[0][0] == board[1][1] && board[1][1] == board[2][2]) return true
         if (board[0][2] != null && board[0][2] == board[1][1] && board[1][1] == board[2][0]) return true
         return false
+    }
+
+    private fun findWinningLine(board: List<List<Char?>>): List<Pair<Int, Int>> {
+        // Logic to find the winning line coordinates
+        val line = mutableListOf<Pair<Int, Int>>()
+        for (i in 0 until 3) {
+            if (board[i][0] == board[i][1] && board[i][1] == board[i][2]) {
+                for (j in 0 until 3) line.add(Pair(i, j))
+            }
+            if (board[0][i] == board[1][i] && board[1][i] == board[2][i]) {
+                for (j in 0 until 3) line.add(Pair(j, i))
+            }
+        }
+        if (board[0][0] == board[1][1] && board[1][1] == board[2][2]) {
+            line.add(Pair(0, 0))
+            line.add(Pair(1, 1))
+            line.add(Pair(2, 2))
+        }
+        if (board[0][2] == board[1][1] && board[1][1] == board[2][0]) {
+            line.add(Pair(0, 2))
+            line.add(Pair(1, 1))
+            line.add(Pair(2, 0))
+        }
+        return line
     }
 
     private fun saveGameState() {
